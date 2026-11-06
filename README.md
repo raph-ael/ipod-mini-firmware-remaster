@@ -10,22 +10,24 @@ muss aus einem eigenen Restore-Image kommen.
 | --- | --- |
 | Lautstärke | Hartes Limit bei −12 dB im letzten Schritt vor dem Codec, voller Balken entspricht dem Limit |
 | Hauptmenü | Nur noch Hörspiele, Musik und Sie hören |
-| Einstellungen | Nicht mehr erreichbar, damit auch kein Zurücksetzen und keine Sprachumstellung |
+| Einstellungen | Aus dem Hauptmenü entfernt, damit auch kein Zurücksetzen und keine Sprachumstellung |
 | Texte | „Wiedergabelisten" wird zu „Hörspiele", „Alben" wird zu „Musik" |
 
-Insgesamt ändern sich 46 Byte. Der Build bricht ab, wenn die Firmware nicht exakt
+Insgesamt ändern sich 83 Byte. Der Build bricht ab, wenn die Firmware nicht exakt
 die erwartete Datei ist.
 
 ## Status
 
-Statisch geprüft, **noch nicht auf einem Gerät getestet**. Lautstärkekurve,
-Menüfilter und Bootverhalten stammen aus der Analyse, nicht aus einer Messung.
+Am iPod mini 1G getestet: Die gepatchte Firmware startet, und Hörspiele und Musik
+lassen sich über die erzeugte `iTunesDB` abspielen.
 
 Offen:
 
-- Test auf dem Gerät
-- Erzeugen einer `iTunesDB` aus den vorhandenen MP3s, ohne die zeigt das OS keine Titel
-- Weiterhören an der letzten Stelle für Hörspiele
+- Weiterhören gründlich testen. Positionen werden gespeichert, der Alltag ist aber ungeprüft.
+- Fertiges Sync-Werkzeug für alle Medien, `tools/sync/` kann bisher nur eine Auswahl
+- Feste Installation auf der Firmware-Partition
+
+Das Testgerät läuft vorerst wieder mit Rockbox.
 
 ## Bauen
 
@@ -57,6 +59,7 @@ Menu gedrückt wird. Das lässt sich ohne Firmware-Änderung abstellen:
 2. In `/.rockbox/config.cfg` die Zeile `clear settings on hold: off` ergänzen.
 
 Punkt 2 ist nötig, weil Rockbox sonst bei aktivem Hold seine Einstellungen zurücksetzt.
+Am Gerät bestätigt: Rockbox startet danach auch mit Hold und Menu.
 
 ## Werkzeuge
 
