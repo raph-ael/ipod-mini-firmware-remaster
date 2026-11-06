@@ -30,8 +30,8 @@ MENU_ALBUMS = 0x0004
 # Resource "Menu" 9490 (main menu): u32 count, then 40-byte entries.
 MAIN_MENU = 0x19db00
 MENU_ENTRY_SIZE = 40
-ENTRY_CALENDARS = 13  # hidden by the visibility mask
-ENTRY_SETTINGS = 16   # not covered by the mask, so it has to be replaced
+MAIN_MENU_ENTRIES = 21
+ENTRY_SETTINGS = 16   # not covered by the visibility mask
 
 # German language block.
 GERMAN_BLOCK = 0x16d0f4
@@ -85,17 +85,18 @@ def patch_menu(img):
     img.apply(0x06cfa4, ins(0xe5900000), ins(0xe3a00c80))
     img.apply(0x06cfa8, ins(0xe5900b34), ins(0xe3800004))
 
-    # Settings is always visible, so overwrite it with a hidden entry. Keeping
-    # the entry count avoids disturbing anything that indexes this table.
+    # Settings has no visibility bit, so it has to leave the table. The UI script
+    # hides entries by id and stops at the first match, which rules out replacing
+    # it with a copy of another entry: the copy stays visible.
     entry = lambda i: MAIN_MENU + 4 + i * MENU_ENTRY_SIZE
     start = img.payload_range()[0]
-    hidden = bytes(img.data[start + entry(ENTRY_CALENDARS):
-                            start + entry(ENTRY_CALENDARS) + MENU_ENTRY_SIZE])
-    settings = bytes(img.data[start + entry(ENTRY_SETTINGS):
-                              start + entry(ENTRY_SETTINGS) + MENU_ENTRY_SIZE])
-    if struct.unpack_from("<H", settings, 20)[0] != 0xffbf:
+    table_end = entry(MAIN_MENU_ENTRIES)
+    old_tail = bytes(img.data[start + entry(ENTRY_SETTINGS):start + table_end])
+    if struct.unpack_from("<H", old_tail, 20)[0] != 0xffbf:
         raise ValueError("main menu entry 16 is not Settings")
-    img.apply(entry(ENTRY_SETTINGS), settings, hidden)
+    new_tail = old_tail[MENU_ENTRY_SIZE:] + bytes(MENU_ENTRY_SIZE)
+    img.apply(entry(ENTRY_SETTINGS), old_tail, new_tail)
+    img.apply(MAIN_MENU, ins(MAIN_MENU_ENTRIES), ins(MAIN_MENU_ENTRIES - 1))
     return mask
 
 

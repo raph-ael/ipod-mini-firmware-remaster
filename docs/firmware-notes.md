@@ -41,7 +41,9 @@ gesetzt ist. Die Abbildung ID → Bit steht bei `0x684e4`, der Werkszustand ist
 Speichern der Preferences darauf zu.
 
 "Einstellungen" und "Sie hören" haben kein Bit und lassen sich nicht ausblenden.
-Der Build ersetzt deshalb den Einstellungs-Eintrag durch einen ausgeblendeten.
+Das Bytecode-Skript blendet Einträge über ihre ID aus und trifft dabei offenbar nur
+den ersten Treffer: Eine Kopie von "Kalender" an der Stelle von "Einstellungen" blieb
+am Gerät sichtbar. Der Build entfernt den Eintrag deshalb aus der Tabelle.
 
 ## Lautstärke
 
@@ -58,6 +60,18 @@ Beim WM8731 ist `0x79` genau 0 dB und jede Stufe 1 dB. Die Skala ist also
 dB-linear. Von den 20 direkten Aufrufen der Codec-Schreibfunktion `0x157128`
 schreibt nur `0x1467d0` einen variablen Wert in dieses Register, zwei weitere
 schreiben feste Stummwerte. Die Klemme bei `0x146774` greift daher immer.
+
+## Titel und iTunesDB
+
+Der Parser beginnt bei `0xb095c`. Er verlangt, dass die Gesamtlänge im `mhbd`-Header
+der Dateigröße entspricht. Von `mhsd` Typ 2 und 3 liest er nur den ersten.
+
+`0xa6608` speichert den Dateipfad eines Titels: Er überspringt die ersten 20 Zeichen,
+ohne sie zu prüfen, und übernimmt vom Rest höchstens 35 Byte. `0xd5650` setzt beim
+Öffnen wieder `iPod_Control\Music\` davor. Titel müssen also unter diesem Ordner liegen.
+
+Byte `0xA6` im `mhit`-Header wird beim Parsen gelesen. `0xa25c4` behandelt einen Titel
+mit gesetztem Flag wie eine `.m4b`-Datei.
 
 ## Rockbox als sichere Testumgebung
 

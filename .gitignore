@@ -5,6 +5,7 @@ Firmware-*
 *.bin
 *.ipod
 build/
+tools/sync/kidsdb
 __pycache__/
 # Local reverse-engineering output (derived from Apple's binary).
 re-output/
