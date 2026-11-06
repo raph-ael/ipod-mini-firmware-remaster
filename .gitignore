@@ -1,0 +1,10 @@
+# Apple firmware is copyrighted and must never enter this public repo.
+*.ipsw
+Firmware-*
+*.img
+*.bin
+*.ipod
+build/
+__pycache__/
+# Local reverse-engineering output (derived from Apple's binary).
+re-output/
